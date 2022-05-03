@@ -4,6 +4,8 @@
 
 Homepage [Here](https://agem.ae) and node to connect to agem.ae:5980 
 
+on par with Chia verion 1.3.4 (python 3.10 /Ubuntu22.04)
+
 ## Installing
 
 Install instructions are available in the
