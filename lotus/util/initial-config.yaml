@@ -110,7 +110,7 @@ private_ssl_ca:
   crt: "config/ssl/ca/private_ca.crt"
   key: "config/ssl/ca/private_ca.key"
 
-chia_ssl_ca:
+lotus_ssl_ca:
   crt: "config/ssl/ca/lotus_ca.crt"
   key: "config/ssl/ca/lotus_ca.key"
 
@@ -204,9 +204,9 @@ harvester:
     crt: "config/ssl/ca/private_ca.crt"
     key: "config/ssl/ca/private_ca.key"
 
-  chia_ssl_ca:
-    crt: "config/ssl/ca/chia_ca.crt"
-    key: "config/ssl/ca/chia_ca.key"
+  lotus_ssl_ca:
+    crt: "config/ssl/ca/lotus_ca.crt"
+    key: "config/ssl/ca/lotus_ca.key"
 
 pool:
   # Replace this with a real puzzle hash
