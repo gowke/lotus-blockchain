@@ -2,7 +2,7 @@
 
 ![Alt text](https://agem.ae/lotus_ascii.png)
 
-Homepage [Here](https://lotusgang.org) and node to connect to 5.30.22.178:5980 
+Homepage [Here](https://lotusgang.org) and node to connect to agem.ae:5980 
 
 on par with Chia verion 1.3.4 (python 3.10 /Ubuntu22.04)
 
