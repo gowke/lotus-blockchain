@@ -351,7 +351,7 @@ full_node:
 
   # If True, starts an RPC server at the following port
   start_rpc_server: True
-  rpc_port: 8598
+  rpc_port: 5898
 
   # Use UPnP to attempt to allow other full nodes to reach your node behind a gateway
   enable_upnp: True
