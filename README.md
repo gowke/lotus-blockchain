@@ -2,7 +2,7 @@
 
 ![Alt text](https://agem.ae/lotus_ascii.png)
 
-Homepage [Here](https://lotusgang.org) and node to connect to agem.ae:5980 (lotus show -a agem.ae:5980)
+Is now defunct! Thank you for the year long journey!
 
 [Latest announcements](https://lotusgang.org/latest.html)
 
