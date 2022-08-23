@@ -75,7 +75,6 @@ jobs:
         echo "::set-output name=HAS_SIGNING_SECRET::${HAS_SIGNING_SECRET}"
       env:
         SIGNING_SECRET: "${{ secrets.WIN_CODE_SIGN_CERT }}"
-        AWS_SECRET: "${{ secrets.INSTALLER_UPLOAD_KEY }}"
 
     - name: Decode code signing cert into an encrypted file
       if: steps.check_secrets.outputs.HAS_SIGNING_SECRET
