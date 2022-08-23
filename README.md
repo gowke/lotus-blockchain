@@ -6,7 +6,7 @@ It has bounced back to life, thanks to community!
 
 let's keep it alive 
 
-![Lotus](https://agem.ae/index.png)
+![Lotus](https://agem.ae/lotus-telegram.jpg)
 
 [Latest announcements](https://lotusgang.org/latest.html)
 
