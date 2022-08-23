@@ -104,7 +104,7 @@ jobs:
       run: |
         .\Install.ps1 -d
 
-    - name: Build Windows installer with build_scripts\build_windows.ps1
+    - name: Build Windows binaries with build_scripts\build_windows.ps1
       env:
         WIN_CODE_SIGN_PASS: ${{ secrets.WIN_CODE_SIGN_PASS }}
       run: |
