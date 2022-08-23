@@ -1,8 +1,12 @@
 # lotus-blockchain
 
-![Alt text](https://agem.ae/lotus_ascii.png)
+![Lotus](https://agem.ae/lotus_ascii.png)
 
-Is now defunct! Thank you for the year long journey!
+It has bounced back to life, thanks to community! 
+
+let's keep it alive 
+
+![Lotus](https://agem.ae/index.png)
 
 [Latest announcements](https://lotusgang.org/latest.html)
 
