@@ -1,8 +1,8 @@
 # lotus-blockchain
 
-![Lotus](https://agem.ae/lotus_ascii.png)
+It bounced back to life, thanks to community! 
 
-It has bounced back to life, thanks to community! 
+![Lotus](https://agem.ae/lotus_ascii.png)
 
 let's keep it alive [telegram channel](https://t.me/+nHcOkm17VTExZGI0)
 
