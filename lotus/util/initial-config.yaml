@@ -4,7 +4,7 @@ min_mainnet_k_size: 32
 ping_interval: 120
 self_hostname: &self_hostname "localhost"
 prefer_ipv6: False
-daemon_port: 59400
+daemon_port: 59800
 daemon_max_message_size: 50000000 # maximum size of RPC message in bytes
 inbound_rate_limit_percent: 100
 outbound_rate_limit_percent: 30
@@ -475,7 +475,7 @@ introducer:
 
 wallet:
   port: 5949
-  rpc_port: 9256
+  rpc_port: 5296
 
   enable_profiler: False
 
