@@ -6,7 +6,7 @@ It bounced back to life, thanks to community!
 
 let's keep it alive [telegram channel](https://t.me/+nHcOkm17VTExZGI0)
 
-                    [discord server](https://discord.gg/enWNGT9j)
+[discord server](https://discord.gg/enWNGT9j)
 
 ![Lotus](https://agem.ae/lotus-telegram.jpg)
 
