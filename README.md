@@ -2,7 +2,7 @@
 
 ![Alt text](https://lotusgang.org/lotus_ascii.png)
 
-This is source code only, for latest gui please check [main repo link] (https://github.com/Lotus-Network)
+This is source code only, for latest gui please check [main repo link](https://github.com/Lotus-Network)
 
 connect to active nodes:
 lotus peer -a lotusgang.org:5980 full_node
