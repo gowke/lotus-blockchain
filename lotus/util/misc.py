@@ -1,4 +1,17 @@
-from typing import Sequence, Union
+import dataclasses
+from pathlib import Path
+from typing import Any, Dict, Sequence, Union
+
+from lotus.util.errors import InvalidPathError
+from lotus.util.ints import uint16
+from lotus.util.streamable import Streamable, recurse_jsonify, streamable
+
+
+@streamable
+@dataclasses.dataclass(frozen=True)
+class VersionedBlob(Streamable):
+    version: uint16
+    blob: bytes
 
 
 def format_bytes(bytes: int) -> str:
@@ -63,9 +76,9 @@ def format_minutes(minutes: int) -> str:
     return "Unknown"
 
 
-def prompt_yes_no(prompt: str = "(y/n) ") -> bool:
+def prompt_yes_no(prompt: str) -> bool:
     while True:
-        response = str(input(prompt)).lower().strip()
+        response = str(input(prompt + " (y/n): ")).lower().strip()
         ch = response[:1]
         if ch == "y":
             return True
@@ -75,3 +88,20 @@ def prompt_yes_no(prompt: str = "(y/n) ") -> bool:
 
 def get_list_or_len(list_in: Sequence[object], length: bool) -> Union[int, Sequence[object]]:
     return len(list_in) if length else list_in
+
+
+def dataclass_to_json_dict(instance: Any) -> Dict[str, Any]:
+    ret: Dict[str, Any] = recurse_jsonify(instance)
+    return ret
+
+
+def validate_directory_writable(path: Path) -> None:
+    write_test_path = path / ".write_test"
+    try:
+        with write_test_path.open("w"):
+            pass
+        write_test_path.unlink()
+    except FileNotFoundError:
+        raise InvalidPathError(path, "Directory doesn't exist")
+    except OSError:
+        raise InvalidPathError(path, "Directory not writable")

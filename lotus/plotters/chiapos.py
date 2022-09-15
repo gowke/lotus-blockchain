@@ -1,6 +1,6 @@
 """
 NOTE: This contains duplicate code from `lotus.cmds.plots`.
-After `chia plots create` becomes obsolete, consider removing it from there.
+After `lotus.plots create` becomes obsolete, consider removing it from there.
 """
 import asyncio
 import logging
@@ -14,9 +14,9 @@ from lotus.plotting.util import add_plot_directory, validate_plot_size
 log = logging.getLogger(__name__)
 
 
-def get_chiapos_install_info() -> Optional[Dict[str, Any]]:
-    chiapos_version: str = pkg_resources.get_distribution("chiapos").version
-    return {"display_name": "Chia Proof of Space", "version": chiapos_version, "installed": True}
+def get_lotus_os_install_info() -> Optional[Dict[str, Any]]:
+    lotus.os_version: str = pkg_resources.get_distribution("chiapos").version
+    return {"display_name": "Chia Proof of Space", "version": lotus.os_version, "installed": True}
 
 
 class Params:
@@ -55,4 +55,7 @@ def plot_chia(args, root_path):
     )
     asyncio.run(create_plots(Params(args), plot_keys))
     if not args.exclude_final_dir:
-        add_plot_directory(root_path, args.finaldir)
+        try:
+            add_plot_directory(root_path, args.finaldir)
+        except ValueError as e:
+            print(e)

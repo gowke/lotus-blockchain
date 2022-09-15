@@ -11,12 +11,7 @@ from blspy import AugSchemeMPL, G1Element, G2Element, PrivateKey
 
 import lotus.server.ws_connection as ws  # lgtm [py/import-and-import-from]
 from lotus.consensus.constants import ConsensusConstants
-from lotus.daemon.keychain_proxy import (
-    KeychainProxy,
-    KeychainProxyConnectionFailure,
-    connect_to_keychain_and_validate,
-    wrap_local_keychain,
-)
+from lotus.daemon.keychain_proxy import KeychainProxy, connect_to_keychain_and_validate, wrap_local_keychain
 from lotus.plot_sync.delta import Delta
 from lotus.plot_sync.receiver import Receiver
 from lotus.pools.pool_config import PoolWalletConfig, add_auth_key, load_pool_config
@@ -42,6 +37,7 @@ from lotus.types.blockchain_format.sized_bytes import bytes32
 from lotus.util.bech32m import decode_puzzle_hash
 from lotus.util.byte_types import hexstr_to_bytes
 from lotus.util.config import config_path_for_filename, load_config, lock_and_load_config, save_config
+from lotus.util.errors import KeychainProxyConnectionFailure
 from lotus.util.hash import std_hash
 from lotus.util.ints import uint8, uint16, uint32, uint64
 from lotus.util.keychain import Keychain
@@ -125,7 +121,7 @@ class Farmer:
             else:
                 self.keychain_proxy = await connect_to_keychain_and_validate(self._root_path, self.log)
                 if not self.keychain_proxy:
-                    raise KeychainProxyConnectionFailure("Failed to connect to keychain service")
+                    raise KeychainProxyConnectionFailure()
         return self.keychain_proxy
 
     async def get_all_private_keys(self):
@@ -134,7 +130,11 @@ class Farmer:
 
     async def setup_keys(self) -> bool:
         no_keys_error_str = "No keys exist. Please run 'lotus keys generate' or open the UI."
-        self.all_root_sks: List[PrivateKey] = [sk for sk, _ in await self.get_all_private_keys()]
+        try:
+            self.all_root_sks: List[PrivateKey] = [sk for sk, _ in await self.get_all_private_keys()]
+        except KeychainProxyConnectionFailure:
+            return False
+
         self._private_keys = [master_sk_to_farmer_sk(sk) for sk in self.all_root_sks] + [
             master_sk_to_pool_sk(sk) for sk in self.all_root_sks
         ]
@@ -256,11 +256,14 @@ class Farmer:
         self.state_changed("close_connection", {})
         if connection.connection_type is NodeType.HARVESTER:
             del self.plot_sync_receivers[connection.peer_node_id]
+            self.state_changed("harvester_removed", {"node_id": connection.peer_node_id})
 
-    async def plot_sync_callback(self, peer_id: bytes32, delta: Delta) -> None:
-        log.info(f"plot_sync_callback: peer_id {peer_id}, delta {delta}")
-        if not delta.empty():
-            self.state_changed("new_plots", await self.get_harvesters())
+    async def plot_sync_callback(self, peer_id: bytes32, delta: Optional[Delta]) -> None:
+        log.debug(f"plot_sync_callback: peer_id {peer_id}, delta {delta}")
+        receiver: Receiver = self.plot_sync_receivers[peer_id]
+        harvester_updated: bool = delta is not None and not delta.empty()
+        if receiver.initial_sync() or harvester_updated:
+            self.state_changed("harvester_update", receiver.to_dict(True))
 
     async def _pool_get_pool_info(self, pool_config: PoolWalletConfig) -> Optional[Dict]:
         try:
@@ -649,6 +652,12 @@ class Farmer:
                 )
 
         return {"harvesters": harvesters}
+
+    def get_receiver(self, node_id: bytes32) -> Receiver:
+        receiver: Optional[Receiver] = self.plot_sync_receivers.get(node_id)
+        if receiver is None:
+            raise KeyError(f"Receiver missing for {node_id}")
+        return receiver
 
     async def _periodically_update_pool_state_task(self):
         time_slept: uint64 = uint64(0)

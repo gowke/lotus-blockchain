@@ -1,35 +1,35 @@
 import asyncio
-import random
-from time import monotonic
-from pathlib import Path
-from lotus.full_node.block_store import BlockStore
 import os
+import random
 import sys
+from pathlib import Path
+from time import monotonic
 
-from benchmarks.utils import clvm_generator
-from lotus.util.db_wrapper import DBWrapper2
-from lotus.util.ints import uint128, uint64, uint32, uint8
 from utils import (
-    rewards,
-    rand_hash,
-    setup_db,
+    rand_bytes,
+    rand_class_group_element,
     rand_g1,
     rand_g2,
-    rand_bytes,
+    rand_hash,
     rand_vdf,
     rand_vdf_proof,
-    rand_class_group_element,
+    rewards,
+    setup_db,
 )
-from lotus.types.full_block import FullBlock
-from lotus.consensus.block_record import BlockRecord
-from lotus.types.blockchain_format.proof_of_space import ProofOfSpace
-from lotus.types.blockchain_format.reward_chain_block import RewardChainBlock
-from lotus.types.blockchain_format.pool_target import PoolTarget
-from lotus.types.blockchain_format.foliage import Foliage, FoliageTransactionBlock, TransactionsInfo, FoliageBlockData
-from lotus.types.blockchain_format.program import SerializedProgram
-from lotus.types.blockchain_format.sized_bytes import bytes32
-from lotus.types.blockchain_format.sub_epoch_summary import SubEpochSummary
 
+from benchmarks.utils import clvm_generator
+from chia.consensus.block_record import BlockRecord
+from chia.full_node.block_store import BlockStore
+from chia.types.blockchain_format.foliage import Foliage, FoliageBlockData, FoliageTransactionBlock, TransactionsInfo
+from chia.types.blockchain_format.pool_target import PoolTarget
+from chia.types.blockchain_format.program import SerializedProgram
+from chia.types.blockchain_format.proof_of_space import ProofOfSpace
+from chia.types.blockchain_format.reward_chain_block import RewardChainBlock
+from chia.types.blockchain_format.sized_bytes import bytes32
+from chia.types.blockchain_format.sub_epoch_summary import SubEpochSummary
+from chia.types.full_block import FullBlock
+from chia.util.db_wrapper import DBWrapper2
+from chia.util.ints import uint8, uint32, uint64, uint128
 
 NUM_ITERS = 20000
 
@@ -259,6 +259,7 @@ async def run_add_block_benchmark(version: int):
         start = monotonic()
         for h in header_hashes:
             block = await block_store.get_full_block(h)
+            assert block is not None
             assert block.header_hash == h
 
         stop = monotonic()
@@ -273,8 +274,9 @@ async def run_add_block_benchmark(version: int):
 
         start = monotonic()
         for h in header_hashes:
-            block = await block_store.get_full_block_bytes(h)
-            assert len(block) > 0
+            block_bs = await block_store.get_full_block_bytes(h)
+            assert block_bs is not None
+            assert len(block_bs) > 0
 
         stop = monotonic()
         total_time += stop - start
@@ -288,7 +290,7 @@ async def run_add_block_benchmark(version: int):
 
         start = monotonic()
         for hi in range(1, block_height):
-            blocks = await block_store.get_full_blocks_at([hi])
+            blocks = await block_store.get_full_blocks_at([uint32(hi)])
             assert len(blocks) == 1
             assert blocks[0].height == hi
 
@@ -304,9 +306,9 @@ async def run_add_block_benchmark(version: int):
 
         start = monotonic()
         for h in header_hashes:
-            blocks = await block_store.get_block_records_by_hash([h])
-            assert len(blocks) == 1
-            assert blocks[0].header_hash == h
+            block_recs = await block_store.get_block_records_by_hash([h])
+            assert len(block_recs) == 1
+            assert block_recs[0].header_hash == h
 
         stop = monotonic()
         total_time += stop - start
@@ -336,8 +338,9 @@ async def run_add_block_benchmark(version: int):
 
         start = monotonic()
         for h in header_hashes:
-            blocks = await block_store.get_block_record(h)
-            assert blocks.header_hash == h
+            block_rec = await block_store.get_block_record(h)
+            assert block_rec is not None
+            assert block_rec.header_hash == h
 
         stop = monotonic()
         total_time += stop - start
@@ -352,8 +355,8 @@ async def run_add_block_benchmark(version: int):
         start = monotonic()
         for i in range(100):
             hi = random.randint(1, block_height - 100)
-            blocks = await block_store.get_block_records_in_range(hi, hi + 99)
-            assert len(blocks) == 100
+            blocks_dict = await block_store.get_block_records_in_range(hi, hi + 99)
+            assert len(blocks_dict) == 100
 
         stop = monotonic()
         total_time += stop - start
@@ -366,8 +369,8 @@ async def run_add_block_benchmark(version: int):
             print("profiling get_block_records_close_to_peak")
 
         start = monotonic()
-        blocks, peak = await block_store.get_block_records_close_to_peak(99)
-        assert len(blocks) == 100
+        block_dict, peak_h = await block_store.get_block_records_close_to_peak(99)
+        assert len(block_dict) == 100
 
         stop = monotonic()
         total_time += stop - start
@@ -396,8 +399,8 @@ async def run_add_block_benchmark(version: int):
 
         start = monotonic()
         for i in range(1, 5000):
-            blocks = await block_store.get_random_not_compactified(100)
-            assert len(blocks) == 100
+            blocks_int_list = await block_store.get_random_not_compactified(100)
+            assert len(blocks_int_list) == 100
         stop = monotonic()
         total_time += stop - start
 

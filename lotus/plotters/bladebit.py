@@ -128,12 +128,22 @@ def install_bladebit(root_path):
             [
                 "sudo",
                 "apt",
+                "update",
+                "-y",
+            ],
+            "Could not update get package information from apt",
+        )
+        run_command(
+            [
+                "sudo",
+                "apt",
                 "install",
                 "-y",
                 "build-essential",
                 "cmake",
                 "libnuma-dev",
                 "git",
+                "libgmp-dev",
             ],
             "Could not install dependencies",
         )
@@ -209,7 +219,7 @@ def plot_bladebit(args, lotus_root_path, root_path):
         call_args.append("-m")
     call_args.append(args.finaldir)
     try:
-        asyncio.run(run_plotter(call_args, progress))
+        asyncio.run(run_plotter(lotus_root_path, args.plotter, call_args, progress))
     except Exception as e:
         print(f"Exception while plotting: {e} {type(e)}")
         print(f"Traceback: {traceback.format_exc()}")

@@ -29,9 +29,9 @@ def get_madmax_package_path() -> Path:
 
 def get_madmax_executable_path_for_ksize(plotters_root_path: Path, ksize: int = 32) -> Path:
     madmax_dir: Path = get_madmax_package_path()
-    madmax_exec: str = "chia_plot"
+    madmax_exec: str = "lotus_plot"
     if ksize > 32:
-        madmax_exec += "_k34"  # Use the chia_plot_k34 executable for k-sizes > 32
+        madmax_exec += "_k34"  # Use the lotus.plot_k34 executable for k-sizes > 32
     if sys.platform in ["win32", "cygwin"]:
         madmax_exec += ".exe"
     if not madmax_dir.exists():
@@ -79,6 +79,15 @@ def install_madmax(plotters_root_path: Path):
                 [
                     "sudo",
                     "apt",
+                    "update",
+                    "-y",
+                ],
+                "Could not update get package information from apt",
+            )
+            run_command(
+                [
+                    "sudo",
+                    "apt",
                     "install",
                     "-y",
                     "libsodium-dev",
@@ -111,7 +120,7 @@ def install_madmax(plotters_root_path: Path):
             [
                 "git",
                 "clone",
-                "https://github.com/Chia-Network/chia-plotter-madmax.git",
+                "https://github.com/Chia-Network/lotus.plotter-madmax.git",
                 MADMAX_PLOTTER_DIR,
             ],
             "Could not clone madmax git repository",
@@ -165,8 +174,8 @@ def dir_with_trailing_slash(dir: str) -> str:
     return dir if dir[-1] == os.path.sep else dir + os.path.sep
 
 
-def plot_madmax(args, chia_root_path: Path, plotters_root_path: Path):
-    if sys.platform not in ["win32", "cygwin"]:
+def plot_madmax(args, lotus_root_path: Path, plotters_root_path: Path):
+    if sys.platform != "win32" and sys.platform != "cygwin":
         import resource
 
         # madMAx has a ulimit -n requirement > 296:
@@ -186,7 +195,7 @@ def plot_madmax(args, chia_root_path: Path, plotters_root_path: Path):
             None,
             None if args.pool_key == b"" else args.pool_key.hex(),
             None if args.contract == "" else args.contract,
-            chia_root_path,
+            lotus_root_path,
             log,
             args.connect_to_daemon,
         )
@@ -227,7 +236,7 @@ def plot_madmax(args, chia_root_path: Path, plotters_root_path: Path):
         call_args.append("-k")
         call_args.append(str(args.size))
     try:
-        asyncio.run(run_plotter(call_args, progress))
+        asyncio.run(run_plotter(lotus_root_path, args.plotter, call_args, progress))
     except Exception as e:
         print(f"Exception while plotting: {type(e)} {e}")
         print(f"Traceback: {traceback.format_exc()}")

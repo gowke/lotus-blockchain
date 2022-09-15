@@ -30,7 +30,7 @@ def show_plots(root_path: Path):
 @click.pass_context
 def plots_cmd(ctx: click.Context):
     """Create, add, remove and check your plots"""
-    from lotus.util.chia_logging import initialize_logging
+    from lotus.util.lotus_logging import initialize_logging
 
     root_path: Path = ctx.obj["root_path"]
     if not root_path.is_dir():
@@ -152,7 +152,10 @@ def create_cmd(
 
     asyncio.run(create_plots(Params(), plot_keys))
     if not exclude_final_dir:
-        add_plot_directory(root_path, final_dir)
+        try:
+            add_plot_directory(root_path, final_dir)
+        except ValueError as e:
+            print(e)
 
 
 @plots_cmd.command("check", short_help="Checks plots")
@@ -189,7 +192,11 @@ def check_cmd(
 def add_cmd(ctx: click.Context, final_dir: str):
     from lotus.plotting.util import add_plot_directory
 
-    add_plot_directory(ctx.obj["root_path"], final_dir)
+    try:
+        add_plot_directory(ctx.obj["root_path"], final_dir)
+        print(f"Successfully added: {final_dir}")
+    except ValueError as e:
+        print(e)
 
 
 @plots_cmd.command("remove", short_help="Removes a directory of plots from config.yaml")

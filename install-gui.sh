@@ -13,13 +13,13 @@ if [ "${SCRIPT_DIR}" != "$(pwd)" ]; then
 fi
 
 if [ -z "$VIRTUAL_ENV" ]; then
-  echo "This requires the lotus a python virtual environment."
+  echo "This requires the chia python virtual environment."
   echo "Execute '. ./activate' before running."
   exit 1
 fi
 
 if [ "$(id -u)" = 0 ]; then
-  echo "The Lotus Blockchain GUI can not be installed or run by the root user."
+  echo "The Chia Blockchain GUI can not be installed or run by the root user."
   exit 1
 fi
 
@@ -182,7 +182,7 @@ if [ ! "$CI" ]; then
   echo "Running git submodule update."
   echo ""
   git submodule update
-  cd lotus-blockchain-gui
+  cd chia-blockchain-gui
 
   if [ "$SUBMODULE_BRANCH" ];
   then

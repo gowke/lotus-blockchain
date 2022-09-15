@@ -8,7 +8,7 @@ import textwrap
 import os
 
 from lotus.util.config import load_config, lock_and_load_config, save_config
-from lotus.util.path import mkdir, path_from_root
+from lotus.util.path import path_from_root
 from lotus.util.ints import uint32
 from lotus.types.blockchain_format.sized_bytes import bytes32
 
@@ -44,7 +44,7 @@ def db_upgrade_func(
     if out_db_path is None:
         db_path_replaced = db_pattern.replace("CHALLENGE", selected_network).replace("_v1_", "_v2_")
         out_db_path = path_from_root(root_path, db_path_replaced)
-        mkdir(out_db_path.parent)
+        out_db_path.parent.mkdir(parents=True, exist_ok=True)
 
     total, used, free = shutil.disk_usage(out_db_path.parent)
     in_db_size = in_db_path.stat().st_size

@@ -7,7 +7,6 @@ from blspy import AugSchemeMPL, G2Element, PrivateKey
 
 import lotus.server.ws_connection as ws
 from lotus import __version__
-from lotus.consensus.network_type import NetworkType
 from lotus.consensus.pot_iterations import calculate_iterations_quality, calculate_sp_interval_iters
 from lotus.farmer.farmer import Farmer
 from lotus.protocols import farmer_protocol, harvester_protocol
@@ -65,7 +64,7 @@ class FarmerAPI:
 
         max_pos_per_sp = 5
 
-        if self.farmer.constants.NETWORK_TYPE != NetworkType.MAINNET:
+        if self.farmer.config.get("selected_network") != "mainnet":
             # This is meant to make testnets more stable, when difficulty is very low
             if self.farmer.number_of_responses[new_proof_of_space.sp_hash] > max_pos_per_sp:
                 self.farmer.log.info(
@@ -240,7 +239,7 @@ class FarmerAPI:
                             f"{pool_url}/partial",
                             json=post_partial_request.to_json_dict(),
                             ssl=ssl_context_for_root(get_mozilla_ca_crt(), log=self.farmer.log),
-                            headers={"User-Agent": f"Lotus Blockchain v.{__version__}"},
+                            headers={"User-Agent": f"Chia Blockchain v.{__version__}"},
                         ) as resp:
                             if resp.ok:
                                 pool_response: Dict = json.loads(await resp.text())

@@ -1,5 +1,5 @@
 import click
-from lotus.util.keychain import supports_keyring_passphrase
+
 
 
 @click.command("init", short_help="Create or migrate the configuration")
@@ -29,12 +29,12 @@ def init_cmd(ctx: click.Context, create_certs: str, fix_ssl_permissions: bool, t
 
     \b
     Follow these steps to create new certificates for a remote harvester:
-    - Make a copy of your Farming Machine CA directory: ~/.lotus/[version]/config/ssl/ca
-    - Shut down all lotus daemon processes with `lotus stop all -d`
+    - Make a copy of your Farming Machine CA directory: ~/.lotus/.[version]/config/ssl/ca
+    - Shut down all lotus.daemon processes with `lotus.stop all -d`
     - Run `lotus init -c [directory]` on your remote harvester,
       where [directory] is the the copy of your Farming Machine CA directory
-    - Get more details on remote harvester on Chia wiki:
-      https://github.com/Chia-Network/lotus-blockchain/wiki/Farming-on-many-machines
+    - Get more details on remote harvester on Lotus wiki:
+      https://github.com/Chia-Network/chia-blockchain/wiki/Farming-on-many-machines
     """
     from pathlib import Path
     from .init_funcs import init
@@ -51,13 +51,6 @@ def init_cmd(ctx: click.Context, create_certs: str, fix_ssl_permissions: bool, t
         testnet,
         v1_db,
     )
-
-
-if not supports_keyring_passphrase():
-    from lotus.cmds.passphrase_funcs import remove_passphrase_options_from_cmd
-
-    # TODO: Remove once keyring passphrase management is rolled out to all platforms
-    remove_passphrase_options_from_cmd(init_cmd)
 
 
 if __name__ == "__main__":

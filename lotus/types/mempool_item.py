@@ -3,7 +3,6 @@ from typing import List
 
 from lotus.consensus.cost_calculator import NPCResult
 from lotus.types.blockchain_format.coin import Coin
-from lotus.types.blockchain_format.program import SerializedProgram
 from lotus.types.blockchain_format.sized_bytes import bytes32
 from lotus.types.spend_bundle import SpendBundle
 from lotus.util.ints import uint64
@@ -20,7 +19,6 @@ class MempoolItem(Streamable):
     spend_bundle_name: bytes32
     additions: List[Coin]
     removals: List[Coin]
-    program: SerializedProgram
 
     def __lt__(self, other):
         return self.fee_per_cost < other.fee_per_cost

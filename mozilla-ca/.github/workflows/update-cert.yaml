@@ -7,16 +7,10 @@ on:
 
 permissions:
   id-token: write
-  contents: read
+  contents: write
   actions: write
 
 jobs:
-  workflow-keep-alive:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Flip workflow
-        uses: Chia-Network/actions/github/keep-alive@main
-
   build_wheels:
     name: Update Mozilla cert.pem Nightly
     runs-on: ${{ matrix.os }}

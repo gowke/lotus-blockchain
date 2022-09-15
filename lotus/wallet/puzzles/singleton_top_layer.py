@@ -1,4 +1,4 @@
-from typing import List, Tuple, Optional
+from typing import Iterator, List, Tuple, Optional
 
 from lotus.types.blockchain_format.coin import Coin
 from lotus.types.blockchain_format.program import Program
@@ -157,6 +157,14 @@ MELT_CONDITION = [ConditionOpcode.CREATE_COIN, 0, ESCAPE_VALUE]
 #
 
 
+def match_singleton_puzzle(puzzle: Program) -> Tuple[bool, Iterator[Program]]:
+    mod, curried_args = puzzle.uncurry()
+    if mod == SINGLETON_MOD:
+        return True, curried_args.as_iter()
+    else:
+        return False, iter(())
+
+
 # Given the parent and amount of the launcher coin, return the launcher coin
 def generate_launcher_coin(coin: Coin, amount: uint64) -> Coin:
     return Coin(coin.name(), SINGLETON_LAUNCHER_HASH, amount)
@@ -170,7 +178,7 @@ def adapt_inner_to_singleton(inner_puzzle: Program) -> Program:
 
 def adapt_inner_puzzle_hash_to_singleton(inner_puzzle_hash: bytes32) -> bytes32:
     puzzle = adapt_inner_to_singleton(Program.to(inner_puzzle_hash))
-    return puzzle.get_tree_hash(inner_puzzle_hash)
+    return puzzle.get_tree_hash_precalc(inner_puzzle_hash)
 
 
 def remove_singleton_truth_wrapper(puzzle: Program) -> Program:
@@ -239,7 +247,7 @@ def lineage_proof_for_coinsol(coin_spend: CoinSpend) -> LineageProof:
             _, inner_puzzle = list(args.as_iter())
             inner_puzzle_hash = inner_puzzle.get_tree_hash()
 
-    amount: uint64 = coin_spend.coin.amount
+    amount: uint64 = uint64(coin_spend.coin.amount)
 
     return LineageProof(
         parent_name,
@@ -249,9 +257,11 @@ def lineage_proof_for_coinsol(coin_spend: CoinSpend) -> LineageProof:
 
 
 # Return the puzzle reveal of a singleton with specific ID and innerpuz
-def puzzle_for_singleton(launcher_id: bytes32, inner_puz: Program) -> Program:
+def puzzle_for_singleton(
+    launcher_id: bytes32, inner_puz: Program, launcher_hash: bytes32 = SINGLETON_LAUNCHER_HASH
+) -> Program:
     return SINGLETON_MOD.curry(
-        (SINGLETON_MOD_HASH, (launcher_id, SINGLETON_LAUNCHER_HASH)),
+        (SINGLETON_MOD_HASH, (launcher_id, launcher_hash)),
         inner_puz,
     )
 

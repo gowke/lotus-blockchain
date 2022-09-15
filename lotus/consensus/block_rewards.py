@@ -1,7 +1,7 @@
 from lotus.util.ints import uint32, uint64
 
-# 1 Chia coin = 1,000,000,000,000 = 1 trillion mojo.
-_mojo_per_lotus = 1000000000000
+# 1 Lotus coin = 1,000,000,000,000 = 1 trillion mojo.
+_mojo_per_lotus= 1000000000000
 _blocks_per_year = 1681920  # 32 * 6 * 24 * 365
 
 

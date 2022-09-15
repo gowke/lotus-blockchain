@@ -3,7 +3,7 @@
 set -o errexit
 
 USAGE_TEXT="\
-Usage: $0 [-d]
+Usage: $0 [-adh]
 
   -a                          automated install, no questions
   -d                          install development dependencies
@@ -47,7 +47,7 @@ fi
 if [ "$(uname -m)" = "armv7l" ]; then
   echo ""
   echo "WARNING:"
-  echo "The Chia Blockchain requires a 64 bit OS and this is 32 bit armv7l"
+  echo "The Lotus Blockchain requires a 64 bit OS and this is 32 bit armv7l"
   echo "For more information, see"
   echo "https://github.com/Chia-Network/chia-blockchain/wiki/Raspberry-Pi"
   echo "Exiting."
@@ -211,11 +211,11 @@ find_python() {
         if [ "$BEST_VERSION" = "3" ]; then
           PY3_VERSION=$(python$BEST_VERSION --version | cut -d ' ' -f2)
           if [[ "$PY3_VERSION" =~ 3.11.* ]]; then
-            echo "Chia requires Python version < 3.11.0"
-            echo "Current Python version = $PY3_VERSION"
+            echo "Chia requires Python version < 3.11.0" >&2
+            echo "Current Python version = $PY3_VERSION" >&2
             # If Arch, direct to Arch Wiki
             if type pacman >/dev/null 2>&1 && [ -f "/etc/arch-release" ]; then
-              echo "Please see https://wiki.archlinux.org/title/python#Old_versions for support."
+              echo "Please see https://wiki.archlinux.org/title/python#Old_versions for support." >&2
             fi
             exit 1
           fi
@@ -298,7 +298,7 @@ python -m pip install --extra-index-url https://pypi.chia.net/simple/ miniupnpc=
 python -m pip install -e ."${EXTRAS}" --extra-index-url https://pypi.chia.net/simple/
 
 echo ""
-echo "Chia blockchain install.sh complete."
+echo "Lotus blockchain install.sh complete."
 echo "For assistance join us on Keybase in the #support chat channel:"
 echo "https://keybase.io/team/chia_network.public"
 echo ""
@@ -307,4 +307,4 @@ echo "https://github.com/Chia-Network/chia-blockchain/wiki/Quick-Start-Guide"
 echo ""
 echo "To install the GUI type 'sh install-gui.sh' after '. ./activate'."
 echo ""
-echo "Type '. ./activate' and then 'chia init' to begin."
+echo "Type '. ./activate' and then 'lotus init' to begin."

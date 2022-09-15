@@ -1,9 +1,10 @@
 from typing import Optional
 
 import lotus.server.ws_connection as ws
-from lotus.full_node.full_node import full_node_protocol, wallet_protocol
+from lotus.protocols import full_node_protocol, wallet_protocol
 from lotus.seeder.crawler import Crawler
 from lotus.server.outbound_message import Message
+from lotus.server.server import ChiaServer
 from lotus.util.api_decorators import api_request, peer_required
 
 
@@ -20,7 +21,8 @@ class CrawlerAPI:
         return invoke
 
     @property
-    def server(self):
+    def server(self) -> ChiaServer:
+        assert self.crawler.server is not None
         return self.crawler.server
 
     @property

@@ -1,7 +1,13 @@
 from typing import KeysView, Generator
 
 SERVICES_FOR_GROUP = {
-    "all": "lotus_harvester lotus_timelord_launcher lotus_timelord lotus_farmer lotus_full_node lotus_wallet".split(),
+    "all": (
+        "lotus_harvester lotus_timelord_launcher lotus_timelord lotus_farmer "
+        "lotus_full_node lotus_wallet lotus_data_layer lotus_data_layer_http"
+    ).split(),
+    # TODO: should this be `data_layer`?
+    "data": "lotus_wallet lotus_data_layer".split(),
+    "data_layer_http": "lotus_data_layer_http".split(),
     "node": "lotus_full_node".split(),
     "harvester": "lotus_harvester".split(),
     "farmer": "lotus_harvester lotus_farmer lotus_full_node lotus_wallet".split(),

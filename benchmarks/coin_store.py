@@ -1,17 +1,18 @@
 import asyncio
-import random
-from time import monotonic
-from pathlib import Path
-from lotus.full_node.coin_store import CoinStore
-from typing import List, Tuple
 import os
+import random
 import sys
+from pathlib import Path
+from time import monotonic
+from typing import List, Tuple
 
-from lotus.util.db_wrapper import DBWrapper2
-from lotus.types.blockchain_format.sized_bytes import bytes32
-from lotus.types.blockchain_format.coin import Coin
-from lotus.util.ints import uint64, uint32
-from utils import rewards, rand_hash, setup_db
+from utils import rand_hash, rewards, setup_db
+
+from chia.full_node.coin_store import CoinStore
+from chia.types.blockchain_format.coin import Coin
+from chia.types.blockchain_format.sized_bytes import bytes32
+from chia.util.db_wrapper import DBWrapper2
+from chia.util.ints import uint32, uint64
 
 NUM_ITERS = 200
 
@@ -29,7 +30,7 @@ def make_coins(num: int) -> Tuple[List[Coin], List[bytes32]]:
     for i in range(num):
         c = make_coin()
         additions.append(c)
-        hashes.append(c.get_hash())
+        hashes.append(c.name())
 
     return additions, hashes
 
@@ -69,9 +70,9 @@ async def run_new_block_benchmark(version: int):
             all_unspent = all_unspent[100:]
 
             await coin_store.new_block(
-                height,
-                timestamp,
-                set([pool_coin, farmer_coin]),
+                uint32(height),
+                uint64(timestamp),
+                {pool_coin, farmer_coin},
                 additions,
                 removals,
             )
@@ -110,9 +111,9 @@ async def run_new_block_benchmark(version: int):
 
             start = monotonic()
             await coin_store.new_block(
-                height,
-                timestamp,
-                set([pool_coin, farmer_coin]),
+                uint32(height),
+                uint64(timestamp),
+                {pool_coin, farmer_coin},
                 additions,
                 removals,
             )
@@ -147,8 +148,8 @@ async def run_new_block_benchmark(version: int):
             total_add += 1
 
             farmer_coin, pool_coin = rewards(uint32(height))
-            all_coins += [c.get_hash()]
-            all_unspent += [c.get_hash()]
+            all_coins += [c.name()]
+            all_unspent += [c.name()]
             all_unspent += [pool_coin.name(), farmer_coin.name()]
             total_add += 2
 
@@ -160,9 +161,9 @@ async def run_new_block_benchmark(version: int):
 
             start = monotonic()
             await coin_store.new_block(
-                height,
-                timestamp,
-                set([pool_coin, farmer_coin]),
+                uint32(height),
+                uint64(timestamp),
+                {pool_coin, farmer_coin},
                 additions,
                 removals,
             )
@@ -209,9 +210,9 @@ async def run_new_block_benchmark(version: int):
 
             start = monotonic()
             await coin_store.new_block(
-                height,
-                timestamp,
-                set([pool_coin, farmer_coin]),
+                uint32(height),
+                uint64(timestamp),
+                {pool_coin, farmer_coin},
                 additions,
                 removals,
             )
@@ -284,7 +285,7 @@ async def run_new_block_benchmark(version: int):
         found_coins = 0
         for i in range(1, block_height):
             start = monotonic()
-            records = await coin_store.get_coins_removed_at_height(i)
+            records = await coin_store.get_coins_removed_at_height(uint32(i))
             total_time += monotonic() - start
             found_coins += len(records)
             if verbose:
