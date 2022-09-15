@@ -2,7 +2,6 @@
 
 ![Alt text](https://lotusgang.org/lotus_ascii.png)
 
-Is now defunct! Thank you for the year long journey!
 
 [Latest announcements](https://lotusgang.org/latest.html)
 
